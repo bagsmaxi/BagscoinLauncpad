@@ -986,6 +986,31 @@ tr:hover .price-down { color: inherit; }
 
 /* Mobile */
 @media (max-width: 768px) {
+    /* Ticker banner - not sticky on mobile, smaller */
+    .ticker-banner {
+        position: relative;
+        padding: 10px 12px;
+        font-size: 12px;
+    }
+
+    .ticker-content {
+        gap: 6px;
+    }
+
+    .ticker-symbol {
+        font-size: 14px;
+    }
+
+    .ticker-contract {
+        font-size: 10px;
+        padding: 3px 6px;
+    }
+
+    .ticker-copy-btn {
+        padding: 3px 8px;
+        font-size: 10px;
+    }
+
     .desktop {
         padding: 0;
         padding-bottom: 35px;
@@ -1000,8 +1025,8 @@ tr:hover .price-down { color: inherit; }
     }
 
     .tabs-menu li a {
-        padding: 4px 10px;
-        font-size: 12px;
+        padding: 6px 12px;
+        font-size: 14px;
     }
 
     .toolbar {
@@ -1016,32 +1041,49 @@ tr:hover .price-down { color: inherit; }
     .search-input {
         width: 100%;
         flex: 1;
+        font-size: 16px;
+        padding: 8px;
     }
 
     .refresh-btn {
         margin-left: 0;
         width: 100%;
+        font-size: 14px;
+        padding: 8px;
     }
 
     .token-table {
-        font-size: 11px;
+        font-size: 14px;
     }
 
-    .col-mcap,
+    /* Show MCAP, hide Price on mobile */
+    .col-price,
     .col-volume,
     .col-liquidity,
     .col-age {
         display: none;
     }
 
+    .col-mcap {
+        display: table-cell !important;
+    }
+
     .token-table th,
     .token-table td {
-        padding: 4px;
+        padding: 8px 6px;
     }
 
     .token-image {
-        width: 20px;
-        height: 20px;
+        width: 28px;
+        height: 28px;
+    }
+
+    .token-name {
+        font-size: 14px;
+    }
+
+    .token-symbol-small {
+        font-size: 11px;
     }
 
     .modal-window {
@@ -1056,10 +1098,19 @@ tr:hover .price-down { color: inherit; }
 
     .modal-body {
         max-height: calc(100vh - 30px);
+        font-size: 14px;
     }
 
     .stats-grid {
         grid-template-columns: repeat(2, 1fr);
+    }
+
+    .stat-label {
+        font-size: 11px;
+    }
+
+    .stat-value {
+        font-size: 14px;
     }
 
     .token-header {
@@ -1080,17 +1131,34 @@ tr:hover .price-down { color: inherit; }
         text-overflow: ellipsis;
         white-space: nowrap;
     }
+
+    /* Bigger title bar text */
+    .title-bar-text {
+        font-size: 14px;
+    }
 }
 
 /* Small Mobile */
 @media (max-width: 480px) {
+    .ticker-contract {
+        display: none;
+    }
+
+    .ticker-label {
+        display: none;
+    }
+
     .tabs-menu li a {
-        padding: 4px 8px;
-        font-size: 11px;
+        padding: 5px 10px;
+        font-size: 13px;
     }
 
     .col-change {
         display: none;
+    }
+
+    .token-table {
+        font-size: 13px;
     }
 
     .chart-container {
