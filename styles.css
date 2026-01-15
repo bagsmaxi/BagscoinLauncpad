@@ -7,6 +7,80 @@
     box-sizing: border-box;
 }
 
+/* ========================================
+   TICKER BANNER
+   ======================================== */
+
+.ticker-banner {
+    background: linear-gradient(90deg, #000080, #0000aa, #000080);
+    color: white;
+    padding: 8px 16px;
+    text-align: center;
+    font-size: 13px;
+    border-bottom: 2px solid #000060;
+    position: sticky;
+    top: 0;
+    z-index: 1000;
+}
+
+.ticker-content {
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    flex-wrap: wrap;
+}
+
+.ticker-symbol {
+    font-weight: bold;
+    font-size: 16px;
+    color: #ffff00;
+    text-shadow: 1px 1px 2px rgba(0,0,0,0.5);
+}
+
+.ticker-separator {
+    color: #8888ff;
+}
+
+.ticker-label {
+    color: #ccccff;
+}
+
+.ticker-contract {
+    background: rgba(255,255,255,0.15);
+    padding: 4px 8px;
+    border-radius: 3px;
+    font-family: monospace;
+    font-size: 12px;
+    color: #ffffff;
+    user-select: all;
+    cursor: pointer;
+}
+
+.ticker-contract:hover {
+    background: rgba(255,255,255,0.25);
+}
+
+.ticker-copy-btn {
+    background: #ffff00;
+    color: #000080;
+    border: none;
+    padding: 4px 10px;
+    font-size: 11px;
+    font-weight: bold;
+    cursor: pointer;
+    border-radius: 3px;
+}
+
+.ticker-copy-btn:hover {
+    background: #ffff66;
+}
+
+.ticker-copy-btn.copied {
+    background: #00ff00;
+    color: #006600;
+}
+
 body {
     margin: 0;
     padding: 0;

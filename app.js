@@ -159,6 +159,18 @@ const App = {
             }
         });
 
+        // Copy ticker contract button
+        document.getElementById('copyTickerContract').addEventListener('click', () => {
+            const contract = document.getElementById('tickerContract').textContent;
+            this.copyToClipboard(contract, document.getElementById('copyTickerContract'));
+        });
+
+        // Also allow clicking on the contract code itself to copy
+        document.getElementById('tickerContract').addEventListener('click', () => {
+            const contract = document.getElementById('tickerContract').textContent;
+            this.copyToClipboard(contract, document.getElementById('copyTickerContract'));
+        });
+
         // Chart timeframe tabs
         document.querySelectorAll('.chart-tab').forEach(tab => {
             tab.addEventListener('click', (e) => {
