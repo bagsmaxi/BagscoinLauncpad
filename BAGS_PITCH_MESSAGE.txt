@@ -1,0 +1,87 @@
+================================================================================
+SHORT PITCH - For Twitter DM / Discord
+================================================================================
+
+Hey Bags team!
+
+I built Bagscreener - a token explorer specifically for Bags.fm tokens. It shows:
+- All Bags tokens with price, mcap, volume
+- Creator info (Twitter handles, wallets)
+- Fee recipients with earnings breakdown
+- Integrated trading via Phantom
+
+I'm already using your public API for creator/fees/claim-stats endpoints.
+
+To make it even better, I'd love access to:
+1. Token list endpoint (get all Bags tokens)
+2. Token metadata (name, image, bonding status)
+
+I'm launching a token on Bags to fund development. Would love to chat about a potential partnership!
+
+Demo: http://localhost:3001 (will be deployed soon)
+
+[Your Twitter/Contact]
+
+================================================================================
+LONGER VERSION - For Email / Detailed Inquiry
+================================================================================
+
+Subject: Partnership Proposal - Bagscreener Token Explorer for Bags.fm
+
+Hi Bags team,
+
+I'm reaching out to propose a partnership for Bagscreener, a community-built token explorer I've developed specifically for the Bags.fm ecosystem.
+
+WHAT IS BAGSCREENER?
+A dedicated explorer for Bags tokens featuring:
+- Token discovery (price, market cap, volume, liquidity)
+- Creator information with Twitter/Telegram handles
+- Fee recipient breakdown with earnings data
+- Integrated trading via Phantom wallet
+- Real-time price updates
+
+CURRENT API USAGE:
+I'm successfully using your public API:
+- /token-launch/creator/v3 - Creator info
+- /token-launch/lifetime-fees - Earnings data
+- /token-launch/claim-stats - Fee recipients
+
+API ACCESS REQUEST:
+To provide complete token discovery, I need:
+1. Token list endpoint - Get all/recent Bags tokens
+2. Token metadata - Name, image, bonding status by mint
+3. (Optional) WebSocket for new token alerts
+
+MUTUAL BENEFITS:
+- Increases Bags.fm visibility
+- Drives trader traffic to your platform
+- Free community-driven development
+- Transparent ecosystem tool
+
+FUNDING:
+I'm launching a token on Bags.fm to fund:
+- Server infrastructure
+- Premium API access
+- Continued development
+
+I'd love to discuss partnership options - from simple API access to deeper integration.
+
+Available for a call anytime. Looking forward to your thoughts!
+
+Best,
+[Your Name]
+[Twitter]
+[Telegram]
+[Email]
+
+================================================================================
+FOLLOW-UP MESSAGE (if no response after 3-5 days)
+================================================================================
+
+Hey! Following up on my Bagscreener proposal.
+
+Quick summary: Built a token explorer for Bags, would love API access to list all tokens.
+
+Happy to do a quick demo call if helpful!
+
+[Your contact]

@@ -1,0 +1,362 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Bagscreener - Bags Token Explorer</title>
+    <link rel="stylesheet" href="https://unpkg.com/98.css">
+    <link rel="stylesheet" href="styles.css">
+</head>
+<body>
+    <div class="desktop">
+        <!-- Main Window -->
+        <div class="window main-window" id="mainWindow">
+            <div class="title-bar">
+                <div class="title-bar-text">
+                    <span class="title-icon">💰</span> Bagscreener - Token Explorer
+                </div>
+                <div class="title-bar-controls">
+                    <button aria-label="Minimize"></button>
+                    <button aria-label="Maximize"></button>
+                    <button aria-label="Close"></button>
+                </div>
+            </div>
+
+            <!-- Menu Bar -->
+            <div class="menu-bar">
+                <div class="menu-item">File</div>
+                <div class="menu-item">View</div>
+                <div class="menu-item">Help</div>
+                <div class="refresh-indicator" id="refreshIndicator">
+                    <span class="refresh-dot"></span>
+                    <span id="refreshStatus">Live</span>
+                </div>
+            </div>
+
+            <!-- Tabs -->
+            <menu role="tablist" class="tabs-menu">
+                <li role="tab" aria-selected="true" data-tab="bonded">
+                    <a href="#bonded">📈 Bonded Tokens</a>
+                </li>
+                <li role="tab" data-tab="trending">
+                    <a href="#trending">🔥 Trending</a>
+                </li>
+                <li role="tab" data-tab="new">
+                    <a href="#new">✨ New Tokens</a>
+                </li>
+            </menu>
+
+            <!-- Tab Content -->
+            <div class="window tab-content" role="tabpanel">
+                <div class="window-body">
+                    <!-- Search and Filters -->
+                    <div class="toolbar">
+                        <div class="field-row">
+                            <label for="searchInput">Search:</label>
+                            <input type="text" id="searchInput" placeholder="Token name or address..." class="search-input">
+                        </div>
+                        <div class="field-row">
+                            <label for="sortSelect">Sort by:</label>
+                            <select id="sortSelect">
+                                <option value="marketCap">Market Cap</option>
+                                <option value="volume">Volume (24h)</option>
+                                <option value="price">Price</option>
+                                <option value="priceChange">24h Change</option>
+                                <option value="age">Age</option>
+                                <option value="liquidity">Liquidity</option>
+                            </select>
+                        </div>
+                        <button id="refreshBtn" class="refresh-btn">
+                            🔄 Refresh
+                        </button>
+                        <button id="addTokenBtn" class="add-token-btn">
+                            ➕ Add Token
+                        </button>
+                    </div>
+
+                    <!-- Add Token Modal -->
+                    <div id="addTokenModal" class="add-token-modal" style="display: none;">
+                        <fieldset>
+                            <legend>Add Token Address</legend>
+                            <div class="field-row-stacked">
+                                <label for="tokenAddressInput">Enter Solana token address (ending with BAGS):</label>
+                                <input type="text" id="tokenAddressInput" placeholder="e.g., 7pskt3A1Zsjhngazam7vHWjWHnfgiRump916Xj7ABAGS" style="width: 100%;">
+                            </div>
+                            <div class="add-token-actions">
+                                <button id="confirmAddToken">Add Token</button>
+                                <button id="cancelAddToken">Cancel</button>
+                            </div>
+                            <p class="add-token-hint">Tip: You can add multiple addresses separated by commas</p>
+                        </fieldset>
+                    </div>
+
+                    <!-- Loading Indicator -->
+                    <div id="loadingIndicator" class="loading-container">
+                        <div class="progress-indicator">
+                            <span class="progress-indicator-bar" style="width: 0%;" id="progressBar"></span>
+                        </div>
+                        <p>Loading tokens...</p>
+                    </div>
+
+                    <!-- Token Table -->
+                    <div class="sunken-panel table-container" id="tableContainer" style="display: none;">
+                        <table class="interactive token-table" id="tokenTable">
+                            <thead>
+                                <tr>
+                                    <th class="col-rank" id="resetFiltersBtn" title="Click to reset filters">#</th>
+                                    <th class="col-token">Token</th>
+                                    <th class="col-price">Price</th>
+                                    <th class="col-change">24h %</th>
+                                    <th class="col-mcap">Market Cap</th>
+                                    <th class="col-volume">Volume (24h)</th>
+                                    <th class="col-liquidity">Liquidity</th>
+                                    <th class="col-age">Age</th>
+                                    <th class="col-contract">Contract</th>
+                                </tr>
+                            </thead>
+                            <tbody id="tokenTableBody">
+                                <!-- Tokens will be inserted here -->
+                            </tbody>
+                        </table>
+                    </div>
+
+                    <!-- Pagination -->
+                    <div class="pagination" id="pagination" style="display: none;">
+                        <button id="prevPage" class="page-btn">◀ Prev</button>
+                        <span class="page-info">
+                            Page <span id="currentPage">1</span> of <span id="totalPages">1</span>
+                            (<span id="totalTokens">0</span> tokens)
+                        </span>
+                        <button id="nextPage" class="page-btn">Next ▶</button>
+                    </div>
+
+                    <!-- No Results -->
+                    <div id="noResults" class="no-results" style="display: none;">
+                        <p>No tokens found matching your criteria.</p>
+                    </div>
+
+                    <!-- Error Display -->
+                    <div id="errorDisplay" class="error-display" style="display: none;">
+                        <fieldset>
+                            <legend>Error</legend>
+                            <p id="errorMessage"></p>
+                            <button onclick="location.reload()">Retry</button>
+                        </fieldset>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Status Bar -->
+            <div class="status-bar">
+                <p class="status-bar-field" id="statusTotal">Tokens: 0</p>
+                <p class="status-bar-field" id="statusLastUpdate">Last update: --:--:--</p>
+                <p class="status-bar-field" id="statusNetwork">Network: Solana</p>
+            </div>
+        </div>
+
+        <!-- Token Detail Modal -->
+        <div class="window modal-window" id="tokenModal" style="display: none;">
+            <div class="title-bar">
+                <div class="title-bar-text" id="modalTitle">Token Details</div>
+                <div class="title-bar-controls">
+                    <button aria-label="Close" id="closeModal"></button>
+                </div>
+            </div>
+            <div class="window-body modal-body">
+                <!-- Token Header -->
+                <div class="token-header">
+                    <div class="token-info-main">
+                        <img id="modalTokenImage" src="" alt="" class="token-image-large">
+                        <div class="token-name-section">
+                            <h2 id="modalTokenName">Token Name</h2>
+                            <p id="modalTokenSymbol" class="token-symbol">SYMBOL</p>
+                        </div>
+                    </div>
+                    <div class="token-price-section">
+                        <p class="price-large" id="modalPrice">$0.00</p>
+                        <p class="price-change" id="modalPriceChange">0%</p>
+                    </div>
+                </div>
+
+                <!-- Chart Tabs -->
+                <fieldset class="chart-fieldset">
+                    <legend>Price Chart</legend>
+                    <div class="chart-tabs">
+                        <button class="chart-tab" data-timeframe="1M">1M</button>
+                        <button class="chart-tab" data-timeframe="5M">5M</button>
+                        <button class="chart-tab" data-timeframe="15M">15M</button>
+                        <button class="chart-tab active" data-timeframe="1H">1H</button>
+                        <button class="chart-tab" data-timeframe="4H">4H</button>
+                        <button class="chart-tab" data-timeframe="1D">1D</button>
+                    </div>
+                    <div class="chart-container" id="chartContainer">
+                        <canvas id="priceChart"></canvas>
+                    </div>
+                </fieldset>
+
+                <!-- Token Stats -->
+                <fieldset class="stats-fieldset">
+                    <legend>Statistics</legend>
+                    <div class="stats-grid">
+                        <div class="stat-item">
+                            <span class="stat-label">Market Cap</span>
+                            <span class="stat-value" id="modalMarketCap">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Volume (24h)</span>
+                            <span class="stat-value" id="modalVolume">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Liquidity</span>
+                            <span class="stat-value" id="modalLiquidity">$0</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">Age</span>
+                            <span class="stat-value" id="modalAge">--</span>
+                        </div>
+                        <div class="stat-item">
+                            <span class="stat-label">DEX</span>
+                            <span class="stat-value" id="modalDex">--</span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Creator Section -->
+                <fieldset class="creator-fieldset">
+                    <legend>Creator Info</legend>
+                    <div class="creator-info">
+                        <div class="creator-item">
+                            <span class="creator-label">Created By</span>
+                            <span class="creator-value" id="modalCreator">Loading...</span>
+                        </div>
+                        <div class="creator-item">
+                            <span class="creator-label">Wallet</span>
+                            <span class="creator-value creator-wallet" id="modalCreatorWallet">--</span>
+                            <button class="copy-btn-small" id="copyCreatorWallet" title="Copy wallet">📋</button>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Earnings Section -->
+                <fieldset class="rewards-fieldset">
+                    <legend>Earnings</legend>
+                    <div class="rewards-info">
+                        <div class="reward-item">
+                            <span class="reward-label">Total Earned</span>
+                            <span class="reward-value" id="modalLifetimeFees">Loading...</span>
+                        </div>
+                    </div>
+                </fieldset>
+
+                <!-- Fee Recipients Section -->
+                <fieldset class="claim-stats-fieldset">
+                    <legend>Fee Recipients</legend>
+                    <div class="claim-stats-container" id="modalClaimStats">
+                        <p class="loading-text">Loading fee recipients...</p>
+                    </div>
+                </fieldset>
+
+                <!-- Contract & Links -->
+                <fieldset class="links-fieldset">
+                    <legend>Contract & Links</legend>
+                    <div class="contract-section">
+                        <label>Contract Address:</label>
+                        <div class="contract-row">
+                            <input type="text" id="modalContract" readonly class="contract-input">
+                            <button id="copyContract" class="copy-btn">📋 Copy</button>
+                        </div>
+                    </div>
+                    <div class="social-links" id="socialLinks">
+                        <!-- Social links will be inserted here -->
+                    </div>
+                </fieldset>
+
+                <!-- Trade Section (Coming Soon) -->
+                <fieldset class="trade-fieldset" id="tradeSection">
+                    <legend>Trade</legend>
+                    <div class="trade-coming-soon">
+                        <p class="coming-soon-icon">🚧</p>
+                        <p class="coming-soon-text">Trading Coming Soon</p>
+                        <p class="coming-soon-desc">Direct trading will be available in a future update. For now, use the links below to trade on DexScreener or Bags.fm</p>
+                    </div>
+                    <!-- Hidden trade elements for future use -->
+                    <div id="tradeNotConnected" class="trade-not-connected" style="display: none;">
+                        <p>Connect wallet to trade</p>
+                        <button id="modalConnectWallet" class="wallet-btn">🔗 Connect Wallet</button>
+                    </div>
+                    <div id="tradeConnected" class="trade-connected" style="display: none;">
+                        <div class="trade-tabs">
+                            <button class="trade-tab active" data-side="buy">Buy</button>
+                            <button class="trade-tab" data-side="sell">Sell</button>
+                        </div>
+                        <div class="trade-form">
+                            <div class="field-row-stacked">
+                                <label>Amount (SOL)</label>
+                                <input type="number" id="tradeAmount" placeholder="0.0" step="0.01" min="0">
+                            </div>
+                            <div class="trade-info">
+                                <span>Estimated: <span id="estimatedTokens">0</span> tokens</span>
+                                <span>Slippage: 1%</span>
+                            </div>
+                            <button id="executeTradeBtn" class="trade-execute-btn">Buy Token</button>
+                        </div>
+                        <p class="trade-warning">⚠️ Trading involves risk. DYOR.</p>
+                    </div>
+                </fieldset>
+
+                <!-- Action Buttons -->
+                <div class="modal-actions">
+                    <button id="openDexScreener" class="action-btn">📊 DexScreener</button>
+                    <button id="openBagsFm" class="action-btn">💰 Bags.fm</button>
+                    <button id="closModalBtn">Close</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Modal Overlay -->
+        <div class="modal-overlay" id="modalOverlay" style="display: none;"></div>
+
+        <!-- Taskbar -->
+        <div class="taskbar">
+            <button class="start-button">
+                <span class="start-icon">🪟</span>
+                <span class="start-text">Start</span>
+            </button>
+            <div class="taskbar-divider"></div>
+            <div class="taskbar-item active">
+                <span>💰 Bagscreener</span>
+            </div>
+            <!-- Wallet section hidden - trading disabled for beta -->
+            <div class="wallet-section" style="display: none;">
+                <button id="connectWalletBtn" class="wallet-btn">
+                    🔗 Connect Wallet
+                </button>
+                <div id="walletConnected" class="wallet-connected" style="display: none;">
+                    <span id="walletAddress" class="wallet-address"></span>
+                    <button id="disconnectWalletBtn" class="disconnect-btn" title="Disconnect">✕</button>
+                </div>
+            </div>
+            <div class="taskbar-tray">
+                <span class="tray-icon" id="connectionStatus" title="Connection Status">🟢</span>
+                <span class="tray-time" id="trayTime">00:00</span>
+            </div>
+        </div>
+    </div>
+
+    <!-- Chart.js for price charts -->
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+    <!-- Solana Web3.js for transaction handling -->
+    <script src="https://unpkg.com/@solana/web3.js@1.95.8/lib/index.iife.min.js"></script>
+    <script>
+        // Make solana-web3.js available globally with correct reference
+        if (typeof solanaWeb3 !== 'undefined') {
+            window.solanaWeb3 = solanaWeb3;
+            console.log('Solana Web3.js loaded successfully');
+        } else {
+            console.error('Solana Web3.js failed to load');
+        }
+    </script>
+    <script src="api.js"></script>
+    <script src="app.js"></script>
+</body>
+</html>

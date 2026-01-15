@@ -1,0 +1,20 @@
+{
+  "name": "bagscreener",
+  "version": "1.0.0",
+  "description": "Token explorer for Bags.fm - Discover all Bags tokens",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js",
+    "dev": "node server.js"
+  },
+  "keywords": ["bags", "solana", "token", "explorer", "crypto"],
+  "author": "",
+  "license": "MIT",
+  "engines": {
+    "node": ">=18.0.0"
+  },
+  "dependencies": {
+    "@bagsfm/bags-sdk": "^1.2.5",
+    "dotenv": "^17.2.3"
+  }
+}

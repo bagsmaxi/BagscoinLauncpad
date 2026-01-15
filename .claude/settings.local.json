@@ -1,0 +1,29 @@
+{
+  "permissions": {
+    "allow": [
+      "WebFetch(domain:jdan.github.io)",
+      "WebFetch(domain:docs.bags.fm)",
+      "WebFetch(domain:docs.dexscreener.com)",
+      "WebFetch(domain:dev.bags.fm)",
+      "WebSearch",
+      "WebFetch(domain:bags.fm)",
+      "WebFetch(domain:api.bags.fm)",
+      "WebFetch(domain:docs.bitquery.io)",
+      "Bash(node server.js:*)",
+      "Bash(timeout /t 2 /nobreak)",
+      "Bash(start http://localhost:3001)",
+      "WebFetch(domain:github.com)",
+      "Bash(taskkill:*)",
+      "Bash(netstat:*)",
+      "Bash(findstr:*)",
+      "Bash(timeout /t:*)",
+      "Bash(node:*)",
+      "WebFetch(domain:docs.padre.gg)",
+      "Bash(npm init:*)",
+      "Bash(npm install:*)",
+      "Bash(timeout:*)",
+      "Bash(curl:*)",
+      "Bash(ping:*)"
+    ]
+  }
+}
