@@ -23,7 +23,10 @@
       "Bash(npm install:*)",
       "Bash(timeout:*)",
       "Bash(curl:*)",
-      "Bash(ping:*)"
+      "Bash(ping:*)",
+      "Bash(git add:*)",
+      "Bash(git commit:*)",
+      "Bash(git push)"
     ]
   }
 }
