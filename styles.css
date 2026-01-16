@@ -1,6 +1,31 @@
 /* ========================================
    BAGS INDEX - Windows 98 Retro Styles
+   CoinMarketCap-inspired upgrade
    ======================================== */
+
+/* CSS Variables for consistent theming */
+:root {
+    --color-green: #16C784;
+    --color-green-dark: #00aa00;
+    --color-red: #EA3943;
+    --color-red-dark: #cc0000;
+    --color-blue: #3861FB;
+    --color-gold: #FFD700;
+    --color-gray-100: #f8f9fa;
+    --color-gray-200: #e9ecef;
+    --color-gray-300: #dee2e6;
+    --color-gray-600: #6c757d;
+    --color-gray-800: #343a40;
+    --win98-gray: #c0c0c0;
+    --win98-dark: #808080;
+    --win98-light: #ffffff;
+    --win98-blue: #000080;
+    --win98-teal: #008080;
+    --font-mono: 'Consolas', 'Monaco', monospace;
+    --shadow-sm: 2px 2px 0 rgba(0,0,0,0.1);
+    --shadow-md: 4px 4px 0 rgba(0,0,0,0.15);
+    --transition-fast: 0.15s ease;
+}
 
 /* Reset and Base */
 * {
@@ -12,15 +37,16 @@
    ======================================== */
 
 .ticker-banner {
-    background: linear-gradient(90deg, #000080, #0000aa, #000080);
+    background: linear-gradient(90deg, #000080, #1a1a8c, #000080);
     color: white;
-    padding: 8px 16px;
+    padding: 10px 16px;
     text-align: center;
     font-size: 13px;
-    border-bottom: 2px solid #000060;
+    border-bottom: 3px solid var(--color-gold);
     position: sticky;
     top: 0;
     z-index: 1000;
+    box-shadow: 0 2px 8px rgba(0,0,0,0.3);
 }
 
 .ticker-content {
@@ -107,30 +133,36 @@ body {
 }
 
 /* ========================================
-   MAIN WINDOW
+   MAIN WINDOW - Enhanced
    ======================================== */
 
 .main-window {
     width: 100%;
-    max-width: 1400px;
+    max-width: 1600px;
     margin: 0 auto;
     min-height: calc(100vh - 60px);
     display: flex;
     flex-direction: column;
+    box-shadow: var(--shadow-md);
 }
 
 .title-bar {
     display: flex;
     align-items: center;
+    background: linear-gradient(90deg, #000080, #1084d0, #000080);
+    padding: 4px 8px;
 }
 
 .title-icon {
-    margin-right: 4px;
+    margin-right: 6px;
+    font-size: 16px;
 }
 
 .title-bar-text {
     display: flex;
     align-items: center;
+    font-weight: 700;
+    letter-spacing: 0.5px;
 }
 
 /* Menu Bar */
@@ -233,139 +265,294 @@ body {
 }
 
 /* ========================================
-   TOOLBAR
+   TOOLBAR - Enhanced
    ======================================== */
 
 .toolbar {
     display: flex;
     flex-wrap: wrap;
-    gap: 8px;
-    padding: 8px;
-    background: #c0c0c0;
+    gap: 12px;
+    padding: 12px 16px;
+    background: linear-gradient(180deg, #e0e0e0 0%, #c0c0c0 100%);
     border: 2px solid;
     border-color: #ffffff #808080 #808080 #ffffff;
     margin-bottom: 8px;
     align-items: center;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
 }
 
 .toolbar .field-row {
     display: flex;
     align-items: center;
-    gap: 4px;
+    gap: 8px;
+}
+
+.toolbar .field-row label {
+    font-weight: 600;
+    font-size: 12px;
+    color: #333;
 }
 
 .search-input {
-    width: 200px;
+    width: 240px;
+    padding: 6px 10px;
+    font-size: 13px;
+    border: 2px solid;
+    border-color: #808080 #ffffff #ffffff #808080;
+    background: #fff;
+}
+
+.search-input:focus {
+    outline: none;
+    border-color: var(--win98-blue);
+    box-shadow: 0 0 0 2px rgba(0,0,128,0.1);
 }
 
 .refresh-btn {
     margin-left: auto;
+    padding: 6px 16px;
+    font-weight: 600;
+}
+
+.refresh-btn:hover {
+    background: var(--win98-blue);
+    color: white;
+}
+
+.add-token-btn {
+    background: var(--color-green);
+    color: white;
+    font-weight: 600;
+    padding: 6px 16px;
+    border: 2px solid;
+    border-color: #20d794 #0a9054 #0a9054 #20d794;
+}
+
+.add-token-btn:hover {
+    background: var(--color-green-dark);
 }
 
 /* ========================================
-   TABLE
+   TABLE - CMC Inspired
    ======================================== */
 
 .table-container {
     flex: 1;
     overflow: auto;
     min-height: 300px;
+    background: #fff;
 }
 
 .token-table {
     width: 100%;
     border-collapse: collapse;
-    font-size: 12px;
+    font-size: 13px;
+    line-height: 1.5;
 }
 
 .token-table th {
-    background: #c0c0c0;
+    background: linear-gradient(180deg, #d8d8d8 0%, #c0c0c0 100%);
     border: 1px solid #808080;
-    padding: 4px 8px;
+    padding: 10px 12px;
     text-align: left;
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 12px;
+    text-transform: uppercase;
+    letter-spacing: 0.5px;
     position: sticky;
     top: 0;
     z-index: 10;
     white-space: nowrap;
+    color: #333;
 }
 
 .token-table td {
-    padding: 6px 8px;
-    border-bottom: 1px solid #c0c0c0;
+    padding: 12px;
+    border-bottom: 1px solid #e8e8e8;
     vertical-align: middle;
+    transition: background var(--transition-fast);
 }
 
 .token-table tbody tr {
     cursor: pointer;
+    transition: all var(--transition-fast);
 }
 
 .token-table tbody tr:hover {
-    background: #000080;
-    color: white;
+    background: linear-gradient(90deg, rgba(0,0,128,0.08) 0%, rgba(0,0,128,0.03) 100%);
+}
+
+.token-table tbody tr:hover td {
+    border-bottom-color: var(--win98-blue);
 }
 
 .token-table tbody tr.highlighted {
-    background: #000080;
+    background: var(--win98-blue);
     color: white;
 }
 
+.token-table tbody tr:nth-child(even) {
+    background: rgba(0,0,0,0.02);
+}
+
+.token-table tbody tr:nth-child(even):hover {
+    background: linear-gradient(90deg, rgba(0,0,128,0.08) 0%, rgba(0,0,128,0.03) 100%);
+}
+
 /* Column widths */
-.col-rank { width: 40px; text-align: center; }
-.col-token { min-width: 150px; }
-.col-price { min-width: 100px; text-align: right; cursor: pointer; }
-.col-change { min-width: 80px; text-align: right; cursor: pointer; }
-.col-mcap { min-width: 100px; text-align: right; cursor: pointer; }
-.col-volume { min-width: 100px; text-align: right; cursor: pointer; }
-.col-liquidity { min-width: 100px; text-align: right; cursor: pointer; }
+.col-rank {
+    width: 50px;
+    text-align: center;
+    font-weight: 600;
+    color: var(--color-gray-600);
+}
+.col-token { min-width: 180px; }
+.col-price { min-width: 110px; text-align: right; cursor: pointer; font-family: var(--font-mono); }
+.col-change { min-width: 90px; text-align: right; cursor: pointer; }
+.col-mcap { min-width: 120px; text-align: right; cursor: pointer; font-family: var(--font-mono); }
+.col-volume { min-width: 110px; text-align: right; cursor: pointer; font-family: var(--font-mono); }
+.col-chart { width: 100px; text-align: center; }
+.col-liquidity { min-width: 100px; text-align: right; cursor: pointer; font-family: var(--font-mono); }
 .col-age { min-width: 80px; text-align: right; cursor: pointer; }
-.col-contract { min-width: 120px; }
+.col-actions { width: 80px; text-align: center; }
 
 /* Sortable column hover */
-.token-table th[class^="col-"]:not(.col-rank):not(.col-token):not(.col-contract):hover {
-    background: #a0a0a0;
+.token-table th[class^="col-"]:not(.col-rank):not(.col-token):not(.col-chart):not(.col-actions):hover {
+    background: linear-gradient(180deg, #c8c8c8 0%, #a8a8a8 100%);
+    cursor: pointer;
 }
 
 /* Sorted column indicator */
 .token-table th.sorted {
-    background: #000080;
+    background: linear-gradient(180deg, #000080 0%, #0000a0 100%);
     color: white;
 }
 
-/* Token Cell */
+.token-table th.sorted::after {
+    content: ' \u25BC';
+    font-size: 10px;
+}
+
+.token-table th.sorted.asc::after {
+    content: ' \u25B2';
+}
+
+/* Token Cell - CMC style */
 .token-cell {
     display: flex;
     align-items: center;
-    gap: 8px;
+    gap: 12px;
 }
 
 .token-image {
-    width: 24px;
-    height: 24px;
-    border-radius: 4px;
-    border: 1px solid #808080;
+    width: 32px;
+    height: 32px;
+    border-radius: 50%;
+    border: 2px solid #e8e8e8;
     object-fit: cover;
+    box-shadow: var(--shadow-sm);
+    transition: transform var(--transition-fast);
+}
+
+.token-table tbody tr:hover .token-image {
+    transform: scale(1.1);
+    border-color: var(--win98-blue);
+}
+
+.token-info {
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
 }
 
 .token-name {
-    font-weight: bold;
+    font-weight: 700;
+    font-size: 14px;
     display: block;
+    color: #1a1a2e;
 }
 
 .token-symbol-small {
-    font-size: 10px;
-    color: #666;
+    font-size: 11px;
+    color: var(--color-gray-600);
+    font-weight: 500;
 }
 
 tr:hover .token-symbol-small {
-    color: #ccc;
+    color: var(--win98-blue);
 }
 
-/* Price change colors */
-.price-up { color: #00aa00; font-weight: bold; }
-.price-down { color: #cc0000; font-weight: bold; }
+/* Price change colors - CMC style */
+.price-up {
+    color: var(--color-green);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.price-up::before {
+    content: '\u25B2';
+    font-size: 8px;
+}
+
+.price-down {
+    color: var(--color-red);
+    font-weight: 600;
+    display: inline-flex;
+    align-items: center;
+    gap: 4px;
+}
+
+.price-down::before {
+    content: '\u25BC';
+    font-size: 8px;
+}
+
 tr:hover .price-up,
-tr:hover .price-down { color: inherit; }
+tr:hover .price-down {
+    color: inherit;
+}
+
+tr:hover .price-up::before,
+tr:hover .price-down::before {
+    display: none;
+}
+
+/* Sparkline mini chart */
+.sparkline-container {
+    width: 80px;
+    height: 32px;
+    display: inline-block;
+}
+
+.sparkline-container canvas {
+    width: 100% !important;
+    height: 100% !important;
+}
+
+/* Actions column */
+.action-buttons {
+    display: flex;
+    gap: 4px;
+    justify-content: center;
+}
+
+.action-btn-mini {
+    padding: 4px 8px;
+    font-size: 11px;
+    min-width: auto;
+    background: var(--win98-gray);
+    border: 2px solid;
+    border-color: var(--win98-light) var(--win98-dark) var(--win98-dark) var(--win98-light);
+    cursor: pointer;
+    transition: all var(--transition-fast);
+}
+
+.action-btn-mini:hover {
+    background: var(--win98-blue);
+    color: white;
+}
 
 /* Contract copy button */
 .contract-cell {
@@ -375,46 +562,95 @@ tr:hover .price-down { color: inherit; }
 }
 
 .contract-text {
-    font-family: monospace;
-    font-size: 10px;
+    font-family: var(--font-mono);
+    font-size: 11px;
+    color: var(--color-gray-600);
 }
 
 .copy-btn-small {
-    padding: 1px 4px;
+    padding: 2px 6px;
     font-size: 10px;
     min-width: auto;
+    opacity: 0.7;
+    transition: opacity var(--transition-fast);
+}
+
+.token-table tbody tr:hover .copy-btn-small {
+    opacity: 1;
+}
+
+/* Rank badge for top 3 */
+.rank-badge {
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+    font-weight: 700;
+    font-size: 11px;
+}
+
+.rank-1 {
+    background: linear-gradient(135deg, #FFD700, #FFA500);
+    color: #333;
+    box-shadow: 0 2px 4px rgba(255,215,0,0.4);
+}
+
+.rank-2 {
+    background: linear-gradient(135deg, #C0C0C0, #A8A8A8);
+    color: #333;
+    box-shadow: 0 2px 4px rgba(192,192,192,0.4);
+}
+
+.rank-3 {
+    background: linear-gradient(135deg, #CD7F32, #B87333);
+    color: #fff;
+    box-shadow: 0 2px 4px rgba(205,127,50,0.4);
 }
 
 /* ========================================
-   PAGINATION
+   PAGINATION - CMC Inspired
    ======================================== */
 
 .pagination {
     display: flex;
     justify-content: center;
     align-items: center;
-    gap: 12px;
-    padding: 8px;
+    gap: 16px;
+    padding: 12px 16px;
     margin-top: 8px;
-    background: #c0c0c0;
+    background: linear-gradient(180deg, #e8e8e8 0%, #c0c0c0 100%);
     border: 2px solid;
     border-color: #ffffff #808080 #808080 #ffffff;
+    box-shadow: inset 0 1px 0 rgba(255,255,255,0.5);
 }
 
 .page-btn {
-    min-width: 80px;
+    min-width: 90px;
+    padding: 6px 16px;
+    font-weight: 600;
+    transition: all var(--transition-fast);
+}
+
+.page-btn:hover:not(:disabled) {
+    background: var(--win98-blue);
+    color: white;
 }
 
 .page-btn:disabled {
-    opacity: 0.5;
+    opacity: 0.4;
+    cursor: not-allowed;
 }
 
 .page-info {
-    font-size: 12px;
-    padding: 4px 12px;
+    font-size: 13px;
+    font-weight: 500;
+    padding: 6px 16px;
     background: #ffffff;
     border: 2px solid;
     border-color: #808080 #ffffff #ffffff #808080;
+    border-radius: 2px;
 }
 
 /* Reset filters button style */
@@ -975,12 +1211,17 @@ tr:hover .price-down { color: inherit; }
         grid-template-columns: repeat(2, 1fr);
     }
 
-    .col-liquidity {
+    .col-liquidity,
+    .col-chart {
         display: none;
     }
 
     .search-input {
-        width: 150px;
+        width: 180px;
+    }
+
+    .main-window {
+        max-width: 100%;
     }
 }
 
@@ -1056,16 +1297,32 @@ tr:hover .price-down { color: inherit; }
         font-size: 14px;
     }
 
-    /* Show MCAP, hide Price on mobile */
+    /* Show MCAP and Actions, hide others on mobile */
     .col-price,
     .col-volume,
     .col-liquidity,
+    .col-chart,
     .col-age {
         display: none;
     }
 
-    .col-mcap {
+    .col-mcap,
+    .col-actions {
         display: table-cell !important;
+    }
+
+    .col-actions {
+        width: 50px;
+    }
+
+    .action-buttons {
+        flex-direction: column;
+        gap: 2px;
+    }
+
+    .action-btn-mini {
+        padding: 6px;
+        font-size: 14px;
     }
 
     .token-table th,
@@ -1153,8 +1410,28 @@ tr:hover .price-down { color: inherit; }
         font-size: 13px;
     }
 
-    .col-change {
+    .col-change,
+    .col-actions {
         display: none;
+    }
+
+    .token-table {
+        font-size: 13px;
+    }
+
+    .token-image {
+        width: 24px;
+        height: 24px;
+    }
+
+    .token-name {
+        font-size: 13px;
+    }
+
+    .rank-badge {
+        width: 20px;
+        height: 20px;
+        font-size: 10px;
     }
 
     .token-table {

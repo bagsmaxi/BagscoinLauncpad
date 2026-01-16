@@ -16,6 +16,10 @@
     {
       "src": "*.js",
       "use": "@vercel/static"
+    },
+    {
+      "src": "*.svg",
+      "use": "@vercel/static"
     }
   ],
   "routes": [
@@ -23,6 +27,7 @@
     { "src": "/api/bags/claim-stats", "dest": "/api/bags/claim-stats.js" },
     { "src": "/api/bags/lifetime-fees", "dest": "/api/bags/lifetime-fees.js" },
     { "src": "/api/helius/rpc", "dest": "/api/helius/rpc.js" },
+    { "src": "/favicon.svg", "dest": "/favicon.svg" },
     { "src": "/(.*\\.css)", "dest": "/$1" },
     { "src": "/(.*\\.js)", "dest": "/$1" },
     { "src": "/", "dest": "/index.html" }

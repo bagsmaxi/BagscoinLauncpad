@@ -972,8 +972,116 @@ const App = {
             });
         });
 
+        // Add click handlers for chart action buttons
+        tbody.querySelectorAll('[data-action="chart"]').forEach(btn => {
+            btn.addEventListener('click', (e) => {
+                e.stopPropagation();
+                const address = btn.getAttribute('data-address');
+                const token = tokens.find(t => t.address === address);
+                if (token && token.url) {
+                    window.open(token.url, '_blank');
+                }
+            });
+        });
+
+        // Render sparklines after DOM is updated
+        this.renderSparklines(paginatedTokens);
+
         // Update sort indicators
         this.updateSortIndicators();
+    },
+
+    /**
+     * Render mini sparkline charts for each token
+     */
+    renderSparklines(tokens) {
+        tokens.forEach(token => {
+            const container = document.querySelector(`.sparkline-container[data-address="${token.address}"]`);
+            if (!container) return;
+
+            const canvas = container.querySelector('canvas');
+            if (!canvas) return;
+
+            const ctx = canvas.getContext('2d');
+            const color = container.getAttribute('data-color') || '#16C784';
+
+            // Generate simple sparkline data based on price change
+            // In a real app, you'd fetch actual historical data
+            const points = this.generateSparklineData(token.priceChange24h);
+
+            this.drawSparkline(ctx, points, color, canvas.width, canvas.height);
+        });
+    },
+
+    /**
+     * Generate sparkline data points based on price change
+     */
+    generateSparklineData(priceChange) {
+        const points = [];
+        const numPoints = 20;
+        const trend = priceChange >= 0 ? 1 : -1;
+        const volatility = Math.min(Math.abs(priceChange) / 10, 5) + 1;
+
+        let value = 50;
+        for (let i = 0; i < numPoints; i++) {
+            // Add some randomness but maintain overall trend
+            const random = (Math.random() - 0.5) * volatility * 2;
+            const trendPush = trend * (i / numPoints) * volatility;
+            value = Math.max(10, Math.min(90, value + random + trendPush * 0.5));
+            points.push(value);
+        }
+
+        // Ensure end point reflects the trend
+        points[points.length - 1] = priceChange >= 0 ? Math.max(60, points[points.length - 1]) : Math.min(40, points[points.length - 1]);
+
+        return points;
+    },
+
+    /**
+     * Draw a sparkline on canvas
+     */
+    drawSparkline(ctx, points, color, width, height) {
+        ctx.clearRect(0, 0, width, height);
+
+        if (points.length < 2) return;
+
+        const padding = 2;
+        const chartWidth = width - padding * 2;
+        const chartHeight = height - padding * 2;
+
+        const min = Math.min(...points);
+        const max = Math.max(...points);
+        const range = max - min || 1;
+
+        ctx.beginPath();
+        ctx.strokeStyle = color;
+        ctx.lineWidth = 1.5;
+        ctx.lineCap = 'round';
+        ctx.lineJoin = 'round';
+
+        points.forEach((point, index) => {
+            const x = padding + (index / (points.length - 1)) * chartWidth;
+            const y = padding + chartHeight - ((point - min) / range) * chartHeight;
+
+            if (index === 0) {
+                ctx.moveTo(x, y);
+            } else {
+                ctx.lineTo(x, y);
+            }
+        });
+
+        ctx.stroke();
+
+        // Add subtle gradient fill
+        ctx.lineTo(padding + chartWidth, padding + chartHeight);
+        ctx.lineTo(padding, padding + chartHeight);
+        ctx.closePath();
+
+        const gradient = ctx.createLinearGradient(0, 0, 0, height);
+        gradient.addColorStop(0, color + '30');
+        gradient.addColorStop(1, color + '05');
+        ctx.fillStyle = gradient;
+        ctx.fill();
     },
 
     /**
@@ -981,17 +1089,24 @@ const App = {
      */
     renderTokenRow(token) {
         const priceChangeClass = token.priceChange24h >= 0 ? 'price-up' : 'price-down';
+        const sparklineColor = token.priceChange24h >= 0 ? '#16C784' : '#EA3943';
+
+        // Rank badge for top 3
+        let rankDisplay = token.rank;
+        if (token.rank <= 3) {
+            rankDisplay = `<span class="rank-badge rank-${token.rank}">${token.rank}</span>`;
+        }
 
         return `
-            <tr data-address="${token.address}">
-                <td class="col-rank">${token.rank}</td>
+            <tr data-address="${token.address}" data-pair="${token.pairAddress || ''}">
+                <td class="col-rank">${rankDisplay}</td>
                 <td class="col-token">
                     <div class="token-cell">
                         ${token.image
-                ? `<img src="${token.image}" alt="${token.symbol}" class="token-image" onerror="this.style.display='none'">`
-                : '<div class="token-image" style="background:#c0c0c0;display:flex;align-items:center;justify-content:center;font-size:10px;">?</div>'
+                ? `<img src="${token.image}" alt="${token.symbol}" class="token-image" onerror="this.src='data:image/svg+xml,<svg xmlns=%22http://www.w3.org/2000/svg%22 width=%2232%22 height=%2232%22><rect fill=%22%23c0c0c0%22 width=%2232%22 height=%2232%22 rx=%2216%22/><text x=%2216%22 y=%2220%22 text-anchor=%22middle%22 fill=%22%23666%22 font-size=%2212%22>?</text></svg>'">`
+                : '<div class="token-image" style="background:#c0c0c0;display:flex;align-items:center;justify-content:center;font-size:12px;color:#666;">?</div>'
             }
-                        <div>
+                        <div class="token-info">
                             <span class="token-name">${this.escapeHtml(token.name)}</span>
                             <span class="token-symbol-small">${this.escapeHtml(token.symbol)}</span>
                         </div>
@@ -1003,12 +1118,17 @@ const App = {
                 </td>
                 <td class="col-mcap">${API.formatNumber(token.marketCap)}</td>
                 <td class="col-volume">${API.formatNumber(token.volume24h)}</td>
+                <td class="col-chart">
+                    <div class="sparkline-container" data-address="${token.address}" data-color="${sparklineColor}">
+                        <canvas width="80" height="32"></canvas>
+                    </div>
+                </td>
                 <td class="col-liquidity">${API.formatNumber(token.liquidity)}</td>
                 <td class="col-age">${token.age}</td>
-                <td class="col-contract">
-                    <div class="contract-cell">
-                        <span class="contract-text">${API.truncateAddress(token.address, 4, 4)}</span>
-                        <button class="copy-btn-small" data-address="${token.address}" title="Copy address">📋</button>
+                <td class="col-actions">
+                    <div class="action-buttons">
+                        <button class="action-btn-mini" data-address="${token.address}" data-action="chart" title="View Chart">📊</button>
+                        <button class="action-btn-mini copy-btn-small" data-address="${token.address}" title="Copy Address">📋</button>
                     </div>
                 </td>
             </tr>
