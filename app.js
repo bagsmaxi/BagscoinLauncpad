@@ -338,6 +338,8 @@ const App = {
 
             // Step 2: Create fee share config (includes partner config for platform revenue)
             let configKey = null;
+            let feeConfigTransactions = [];
+
             const feeConfigRes = await fetch('/api/fee-share/create-config', {
                 method: 'POST',
                 headers: { 'Content-Type': 'application/json' },
@@ -352,20 +354,14 @@ const App = {
                 const feeConfig = await feeConfigRes.json();
                 if (feeConfig.configKey) {
                     configKey = feeConfig.configKey;
-
-                    // Sign fee share config transactions if any
+                    // Store transactions for batch signing
                     if (feeConfig.transactions && feeConfig.transactions.length > 0) {
-                        btn.textContent = 'confirm fee setup...';
-                        for (const txBase64 of feeConfig.transactions) {
-                            const txBuffer = Uint8Array.from(atob(txBase64), c => c.charCodeAt(0));
-                            const versionedTx = solanaWeb3.VersionedTransaction.deserialize(txBuffer);
-                            await window.solana.signAndSendTransaction(versionedTx);
-                        }
+                        feeConfigTransactions = feeConfig.transactions;
                     }
                 }
             }
 
-            btn.textContent = 'getting launch tx...';
+            btn.textContent = 'preparing launch...';
 
             // Step 3: Create launch transaction
             const txRes = await fetch('/api/token/create-launch-tx', {
@@ -382,12 +378,54 @@ const App = {
             if (!txRes.ok) throw new Error((await txRes.json()).error || 'Failed to create tx');
             const { transaction } = await txRes.json();
 
-            btn.textContent = 'confirm launch...';
+            // Step 4: Batch sign all transactions at once (single confirmation)
+            btn.textContent = 'confirm in wallet...';
 
-            // Step 4: Sign and send launch transaction
-            const txBuffer = Uint8Array.from(atob(transaction), c => c.charCodeAt(0));
-            const versionedTx = solanaWeb3.VersionedTransaction.deserialize(txBuffer);
-            await window.solana.signAndSendTransaction(versionedTx);
+            // Collect all transactions
+            const allTransactions = [];
+
+            // Add fee config transactions first
+            for (const txBase64 of feeConfigTransactions) {
+                const txBuffer = Uint8Array.from(atob(txBase64), c => c.charCodeAt(0));
+                allTransactions.push(solanaWeb3.VersionedTransaction.deserialize(txBuffer));
+            }
+
+            // Add launch transaction
+            const launchTxBuffer = Uint8Array.from(atob(transaction), c => c.charCodeAt(0));
+            allTransactions.push(solanaWeb3.VersionedTransaction.deserialize(launchTxBuffer));
+
+            // Sign all at once (single wallet popup)
+            if (allTransactions.length > 1) {
+                // Batch sign - single confirmation popup
+                const signedTransactions = await window.solana.signAllTransactions(allTransactions);
+
+                btn.textContent = 'launching...';
+
+                // Send transactions in order via RPC
+                for (const signedTx of signedTransactions) {
+                    const serialized = signedTx.serialize();
+                    const base64Tx = btoa(String.fromCharCode(...serialized));
+
+                    // Send via our RPC proxy
+                    const rpcRes = await fetch('/api/helius/rpc', {
+                        method: 'POST',
+                        headers: { 'Content-Type': 'application/json' },
+                        body: JSON.stringify({
+                            jsonrpc: '2.0',
+                            id: 1,
+                            method: 'sendTransaction',
+                            params: [base64Tx, { encoding: 'base64', skipPreflight: false }]
+                        })
+                    });
+                    const rpcResult = await rpcRes.json();
+                    if (rpcResult.error) {
+                        throw new Error(rpcResult.error.message || 'Transaction failed');
+                    }
+                }
+            } else {
+                // Single transaction - use signAndSend for simplicity
+                await window.solana.signAndSendTransaction(allTransactions[0]);
+            }
 
             this.showToast('Token launched!');
             this.closeCreateModal();
