@@ -16,10 +16,17 @@ require('dotenv').config();
 
 const PORT = process.env.PORT || 3001;
 
-// API Configuration from environment variables
-const BAGS_API_KEY = process.env.BAGS_API_KEY || 'bags_prod_bk_8fBgAJgIsm7T2sXFxi8aYWLIgKfwcWHfuAf0ld3s';
-const HELIUS_RPC_URL = process.env.HELIUS_RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=0d709c4e-dfbf-4bcd-bffb-1080188c2a14';
-// Partner config for platform revenue (from dev.bags.fm)
+// API Configuration from environment variables (REQUIRED - set in .env file)
+const BAGS_API_KEY = process.env.BAGS_API_KEY;
+const HELIUS_RPC_URL = process.env.HELIUS_RPC_URL;
+
+if (!BAGS_API_KEY || !HELIUS_RPC_URL) {
+    console.error('ERROR: Missing required environment variables!');
+    console.error('Please create a .env file with BAGS_API_KEY and HELIUS_RPC_URL');
+    process.exit(1);
+}
+
+// Partner config for platform revenue (from dev.bags.fm) - these are public keys, safe to expose
 const PARTNER_WALLET = '6EhzcMXvKvBkYph4ivkKiCgDK1AbcirU5b3ehpiiffvG';
 const PARTNER_CONFIG_KEY = 'BoWTinLevvUkb8kRrcmfVnmqq8uKKetTwsc2eEJcrxZp';
 // Fallback config key (dynamically created per launch)
