@@ -898,6 +898,230 @@ body {
     font-weight: 500;
 }
 
+/* Fee Share Input */
+.fee-share-input {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.fee-share-input .at-symbol {
+    color: var(--text-muted);
+    font-size: 16px;
+    font-weight: 500;
+}
+
+.fee-share-input input {
+    flex: 1;
+}
+
+.lookup-btn {
+    padding: 12px 16px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 13px;
+    cursor: pointer;
+    transition: all 0.2s;
+}
+
+.lookup-btn:hover {
+    border-color: var(--green);
+    color: var(--green);
+}
+
+.fee-share-preview {
+    display: flex;
+    align-items: center;
+    gap: 12px;
+    margin-top: 12px;
+    padding: 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--green);
+    border-radius: 8px;
+}
+
+.fee-share-avatar {
+    width: 40px;
+    height: 40px;
+    border-radius: 50%;
+    object-fit: cover;
+}
+
+.fee-share-info {
+    flex: 1;
+    display: flex;
+    flex-direction: column;
+    gap: 2px;
+}
+
+.fee-share-name {
+    font-weight: 600;
+    font-size: 14px;
+}
+
+.fee-share-username {
+    color: var(--text-secondary);
+    font-size: 12px;
+}
+
+.remove-fee-share {
+    background: none;
+    border: none;
+    color: var(--text-muted);
+    font-size: 20px;
+    cursor: pointer;
+    padding: 4px 8px;
+}
+
+.remove-fee-share:hover {
+    color: var(--red);
+}
+
+.fee-share-wallet {
+    margin-top: 12px;
+}
+
+.fee-share-wallet label {
+    display: block;
+    font-size: 12px;
+    color: var(--text-secondary);
+    margin-bottom: 6px;
+}
+
+.fee-share-wallet input {
+    width: 100%;
+    padding: 10px 12px;
+    background: var(--bg-secondary);
+    border: 1px solid var(--border);
+    border-radius: 8px;
+    color: var(--text);
+    font-size: 13px;
+    font-family: monospace;
+}
+
+.fee-share-wallet input:focus {
+    border-color: var(--green);
+    outline: none;
+}
+
+.fee-share-percent {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+    margin-top: 12px;
+}
+
+.fee-share-percent label {
+    color: var(--text-secondary);
+    font-size: 13px;
+    margin-bottom: 0;
+}
+
+.fee-share-percent input {
+    width: 70px;
+    text-align: center;
+}
+
+.fee-share-percent span {
+    color: var(--text-secondary);
+}
+
+/* Creator Info Section */
+.creator-info {
+    background: var(--bg-secondary);
+    border-radius: 8px;
+    padding: 16px;
+    margin-bottom: 16px;
+}
+
+.creator-header {
+    margin-bottom: 12px;
+}
+
+.creator-title {
+    font-size: 12px;
+    color: var(--text-muted);
+    text-transform: uppercase;
+    font-weight: 600;
+}
+
+.creator-wallet {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 8px 0;
+    border-bottom: 1px solid var(--border);
+}
+
+.creator-label {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.creator-address {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--text);
+}
+
+.royalty-recipients {
+    padding: 8px 0;
+}
+
+.royalty-recipient {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding: 6px 0;
+}
+
+.recipient-info {
+    display: flex;
+    align-items: center;
+    gap: 8px;
+}
+
+.recipient-avatar {
+    width: 24px;
+    height: 24px;
+    border-radius: 50%;
+}
+
+.recipient-address {
+    font-family: monospace;
+    font-size: 12px;
+    color: var(--text);
+}
+
+.recipient-share {
+    color: var(--green);
+    font-size: 13px;
+    font-weight: 600;
+}
+
+.creator-earnings {
+    display: flex;
+    justify-content: space-between;
+    align-items: center;
+    padding-top: 12px;
+    border-top: 1px solid var(--border);
+    margin-top: 8px;
+}
+
+.earnings-label {
+    color: var(--text-secondary);
+    font-size: 13px;
+}
+
+.earnings-value {
+    color: var(--green);
+    font-size: 16px;
+    font-weight: 700;
+    font-family: monospace;
+}
+
 .create-submit-btn {
     width: 100%;
     padding: 16px;

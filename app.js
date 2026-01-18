@@ -17,7 +17,8 @@ const App = {
         wallet: null,
         walletAddress: null,
         tokenImage: null,
-        isLaunching: false
+        isLaunching: false,
+        feeShareUser: null // { handle, name, avatar, wallet }
     },
 
     config: {
@@ -102,6 +103,16 @@ const App = {
             this.launchToken();
         });
 
+        // Fee share lookup
+        document.getElementById('lookupHandleBtn').addEventListener('click', () => this.lookupTwitterHandle());
+        document.getElementById('feeShareHandle').addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                e.preventDefault();
+                this.lookupTwitterHandle();
+            }
+        });
+        document.getElementById('removeFeeShare').addEventListener('click', () => this.removeFeeShare());
+
         // Escape key
         document.addEventListener('keydown', (e) => {
             if (e.key === 'Escape') {
@@ -152,6 +163,67 @@ const App = {
         upload.innerHTML = '<span>📷</span><span>drag and drop or click</span>';
         upload.classList.remove('has-image');
         this.state.tokenImage = null;
+        this.removeFeeShare();
+    },
+
+    async lookupTwitterHandle() {
+        const handleInput = document.getElementById('feeShareHandle');
+        const handle = handleInput.value.trim();
+
+        if (!handle) {
+            this.showToast('Enter a Twitter handle');
+            return;
+        }
+
+        const btn = document.getElementById('lookupHandleBtn');
+        btn.textContent = 'looking...';
+        btn.disabled = true;
+
+        try {
+            const res = await fetch(`/api/twitter/lookup?handle=${encodeURIComponent(handle)}`);
+            const data = await res.json();
+
+            if (data.error) {
+                throw new Error(data.error);
+            }
+
+            // Store the fee share user (will need wallet address later)
+            this.state.feeShareUser = {
+                handle: data.handle,
+                name: data.name,
+                avatar: data.avatar,
+                wallet: null // User will need to provide or we look up from Bags
+            };
+
+            // Show preview
+            document.getElementById('feeShareAvatar').src = data.avatar;
+            document.getElementById('feeShareName').textContent = data.name;
+            document.getElementById('feeShareUsername').textContent = `@${data.handle}`;
+            document.getElementById('feeSharePreview').style.display = 'flex';
+            document.getElementById('feeShareWallet').style.display = 'block';
+            document.getElementById('feeSharePercent').style.display = 'flex';
+
+            // Hide input
+            handleInput.parentElement.style.display = 'none';
+
+            this.showToast('Profile found! Verify this is correct');
+        } catch (error) {
+            console.error('Lookup error:', error);
+            this.showToast('Could not find profile');
+        } finally {
+            btn.textContent = 'lookup';
+            btn.disabled = false;
+        }
+    },
+
+    removeFeeShare() {
+        this.state.feeShareUser = null;
+        document.getElementById('feeShareHandle').value = '';
+        document.getElementById('feeShareWalletInput').value = '';
+        document.getElementById('feeShareHandle').parentElement.style.display = 'flex';
+        document.getElementById('feeSharePreview').style.display = 'none';
+        document.getElementById('feeShareWallet').style.display = 'none';
+        document.getElementById('feeSharePercent').style.display = 'none';
     },
 
     async initializePartnerConfig() {
@@ -234,6 +306,24 @@ const App = {
 
             btn.textContent = 'setting up fees...';
 
+            // Build fee claimers list
+            let feeClaimers = [];
+            const feeShareWallet = document.getElementById('feeShareWalletInput').value.trim();
+            const feeShareBps = parseInt(document.getElementById('feeShareBps').value) || 50;
+
+            if (this.state.feeShareUser && feeShareWallet) {
+                // Split fees between creator and fee share recipient
+                const recipientBps = feeShareBps * 100; // Convert % to basis points
+                const creatorBps = 10000 - recipientBps;
+                feeClaimers = [
+                    { user: this.state.walletAddress, userBps: creatorBps },
+                    { user: feeShareWallet, userBps: recipientBps }
+                ];
+            } else {
+                // Creator gets all fees
+                feeClaimers = [{ user: this.state.walletAddress, userBps: 10000 }];
+            }
+
             // Step 2: Create fee share config (includes partner config for platform revenue)
             let configKey = null;
             const feeConfigRes = await fetch('/api/fee-share/create-config', {
@@ -242,7 +332,7 @@ const App = {
                 body: JSON.stringify({
                     payer: this.state.walletAddress,
                     tokenMint: tokenInfo.tokenMint,
-                    feeClaimers: [{ user: this.state.walletAddress, userBps: 10000 }]
+                    feeClaimers: feeClaimers
                 })
             });
 
@@ -624,6 +714,77 @@ const App = {
         document.getElementById('modalOverlay').style.display = 'flex';
 
         await this.loadChart(token);
+        await this.loadCreatorInfo(token);
+    },
+
+    async loadCreatorInfo(token) {
+        const creatorInfo = document.getElementById('creatorInfo');
+        const creatorAddress = document.getElementById('creatorAddress');
+        const royaltyRecipients = document.getElementById('royaltyRecipients');
+        const lifetimeEarnings = document.getElementById('lifetimeEarnings');
+
+        // Reset
+        creatorInfo.style.display = 'none';
+        creatorAddress.textContent = '--';
+        royaltyRecipients.innerHTML = '';
+        lifetimeEarnings.textContent = '$0';
+
+        try {
+            // Fetch creator info from Bags API
+            const [creatorRes, feesRes] = await Promise.all([
+                fetch(`/api/bags/creator?tokenMint=${token.address}`),
+                fetch(`/api/bags/lifetime-fees?tokenMint=${token.address}`)
+            ]);
+
+            let creatorData = null;
+            let feesData = null;
+
+            if (creatorRes.ok) {
+                creatorData = await creatorRes.json();
+            }
+
+            if (feesRes.ok) {
+                feesData = await feesRes.json();
+            }
+
+            // Show creator wallet
+            if (creatorData?.creator) {
+                const wallet = creatorData.creator;
+                creatorAddress.textContent = wallet.slice(0, 4) + '...' + wallet.slice(-4);
+                creatorInfo.style.display = 'block';
+            }
+
+            // Show royalty recipients
+            if (creatorData?.feeClaimers && creatorData.feeClaimers.length > 0) {
+                royaltyRecipients.innerHTML = creatorData.feeClaimers.map(claimer => {
+                    const addr = claimer.user || claimer.wallet;
+                    const shortAddr = addr ? (addr.slice(0, 4) + '...' + addr.slice(-4)) : '--';
+                    const share = claimer.userBps ? (claimer.userBps / 100).toFixed(0) + '%' : '--';
+                    return `
+                        <div class="royalty-recipient">
+                            <div class="recipient-info">
+                                <span class="recipient-address">${shortAddr}</span>
+                            </div>
+                            <span class="recipient-share">${share}</span>
+                        </div>
+                    `;
+                }).join('');
+                creatorInfo.style.display = 'block';
+            }
+
+            // Show lifetime earnings
+            if (feesData?.totalFeesUsd !== undefined) {
+                lifetimeEarnings.textContent = '$' + API.formatNumber(feesData.totalFeesUsd).replace('$', '');
+                creatorInfo.style.display = 'block';
+            } else if (feesData?.totalFeesSol !== undefined) {
+                lifetimeEarnings.textContent = feesData.totalFeesSol.toFixed(4) + ' SOL';
+                creatorInfo.style.display = 'block';
+            }
+        } catch (error) {
+            console.error('Failed to load creator info:', error);
+            // Hide section if we couldn't load data
+            creatorInfo.style.display = 'none';
+        }
     },
 
     closeModal() {

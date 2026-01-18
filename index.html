@@ -108,6 +108,24 @@
                 <canvas id="priceChart"></canvas>
             </div>
 
+            <!-- Creator Info Section -->
+            <div class="creator-info" id="creatorInfo" style="display: none;">
+                <div class="creator-header">
+                    <span class="creator-title">creator & royalties</span>
+                </div>
+                <div class="creator-wallet">
+                    <span class="creator-label">created by</span>
+                    <span class="creator-address" id="creatorAddress">--</span>
+                </div>
+                <div class="royalty-recipients" id="royaltyRecipients">
+                    <!-- Filled dynamically -->
+                </div>
+                <div class="creator-earnings">
+                    <span class="earnings-label">lifetime earnings</span>
+                    <span class="earnings-value" id="lifetimeEarnings">$0</span>
+                </div>
+            </div>
+
             <div class="modal-contract">
                 <span class="contract-label">ca</span>
                 <input type="text" id="modalContract" readonly class="contract-input">
@@ -169,6 +187,36 @@
                 <div class="form-group">
                     <label>website (optional)</label>
                     <input type="url" id="tokenWebsite" placeholder="https://...">
+                </div>
+
+                <!-- Fee Share Section -->
+                <div class="form-group">
+                    <label>share fees with (optional)</label>
+                    <div class="fee-share-input">
+                        <span class="at-symbol">@</span>
+                        <input type="text" id="feeShareHandle" placeholder="twitter handle">
+                        <button type="button" id="lookupHandleBtn" class="lookup-btn">lookup</button>
+                    </div>
+                    <div class="fee-share-preview" id="feeSharePreview" style="display: none;">
+                        <img id="feeShareAvatar" src="" alt="" class="fee-share-avatar">
+                        <div class="fee-share-info">
+                            <span id="feeShareName" class="fee-share-name">--</span>
+                            <span id="feeShareUsername" class="fee-share-username">@handle</span>
+                        </div>
+                        <button type="button" id="removeFeeShare" class="remove-fee-share">×</button>
+                    </div>
+                    <div class="fee-share-wallet" id="feeShareWallet" style="display: none;">
+                        <label>their solana wallet</label>
+                        <input type="text" id="feeShareWalletInput" placeholder="paste their wallet address">
+                    </div>
+                    <div class="fee-share-percent" id="feeSharePercent" style="display: none;">
+                        <label>their share %</label>
+                        <input type="number" id="feeShareBps" placeholder="50" min="1" max="99" value="50">
+                        <span>%</span>
+                    </div>
+                    <div class="form-note">
+                        share trading fee royalties with another creator
+                    </div>
                 </div>
 
                 <div class="form-group">

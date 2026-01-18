@@ -301,6 +301,73 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
+    // Twitter/X Profile Lookup
+    if (req.url.startsWith('/api/twitter/lookup') && req.method === 'GET') {
+        const urlParams = new URL(req.url, `http://localhost:${PORT}`);
+        const handle = urlParams.searchParams.get('handle');
+
+        if (!handle) {
+            res.writeHead(400, { 'Content-Type': 'application/json' });
+            res.end(JSON.stringify({ error: 'Missing handle parameter' }));
+            return;
+        }
+
+        // Clean handle (remove @ if present)
+        const cleanHandle = handle.replace(/^@/, '').trim();
+        console.log('Looking up Twitter handle:', cleanHandle);
+
+        // Use unavatar.io for profile image (free service)
+        const avatarUrl = `https://unavatar.io/twitter/${cleanHandle}`;
+
+        // Fetch Twitter profile page to get name
+        const profileUrl = `https://twitter.com/${cleanHandle}`;
+
+        https.get(`https://unavatar.io/twitter/${cleanHandle}?json`, (proxyRes) => {
+            let data = '';
+            proxyRes.on('data', chunk => data += chunk);
+            proxyRes.on('end', () => {
+                try {
+                    // unavatar returns image URL directly or error
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    });
+                    res.end(JSON.stringify({
+                        handle: cleanHandle,
+                        name: cleanHandle, // We'll use handle as name since we can't easily get the display name
+                        avatar: avatarUrl,
+                        profileUrl: profileUrl
+                    }));
+                } catch (e) {
+                    res.writeHead(200, {
+                        'Content-Type': 'application/json',
+                        'Access-Control-Allow-Origin': '*'
+                    });
+                    res.end(JSON.stringify({
+                        handle: cleanHandle,
+                        name: cleanHandle,
+                        avatar: avatarUrl,
+                        profileUrl: profileUrl
+                    }));
+                }
+            });
+        }).on('error', (err) => {
+            console.error('Twitter lookup error:', err);
+            // Still return a response with the avatar URL
+            res.writeHead(200, {
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin': '*'
+            });
+            res.end(JSON.stringify({
+                handle: cleanHandle,
+                name: cleanHandle,
+                avatar: avatarUrl,
+                profileUrl: profileUrl
+            }));
+        });
+        return;
+    }
+
     // Token Launch - Create Token Info (upload image + metadata)
     if (req.url === '/api/token/create-info' && req.method === 'POST') {
         console.log('Creating token info...');
