@@ -301,7 +301,7 @@ const server = http.createServer(async (req, res) => {
         return;
     }
 
-    // Twitter/X Profile Lookup
+    // Twitter/X Profile Lookup - also checks Bags.fm for associated wallet
     if (req.url.startsWith('/api/twitter/lookup') && req.method === 'GET') {
         const urlParams = new URL(req.url, `http://localhost:${PORT}`);
         const handle = urlParams.searchParams.get('handle');
@@ -318,42 +318,42 @@ const server = http.createServer(async (req, res) => {
 
         // Use unavatar.io for profile image (free service)
         const avatarUrl = `https://unavatar.io/twitter/${cleanHandle}`;
-
-        // Fetch Twitter profile page to get name
         const profileUrl = `https://twitter.com/${cleanHandle}`;
 
-        https.get(`https://unavatar.io/twitter/${cleanHandle}?json`, (proxyRes) => {
-            let data = '';
-            proxyRes.on('data', chunk => data += chunk);
-            proxyRes.on('end', () => {
+        // Try to get wallet from Bags.fm API
+        const bagsUserUrl = `${BAGS_API_BASE_URL}/user/by-twitter?handle=${cleanHandle}`;
+
+        https.get(bagsUserUrl, {
+            headers: { 'x-api-key': BAGS_API_KEY }
+        }, (bagsRes) => {
+            let bagsData = '';
+            bagsRes.on('data', chunk => bagsData += chunk);
+            bagsRes.on('end', () => {
+                let wallet = null;
                 try {
-                    // unavatar returns image URL directly or error
-                    res.writeHead(200, {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    });
-                    res.end(JSON.stringify({
-                        handle: cleanHandle,
-                        name: cleanHandle, // We'll use handle as name since we can't easily get the display name
-                        avatar: avatarUrl,
-                        profileUrl: profileUrl
-                    }));
+                    const parsed = JSON.parse(bagsData);
+                    if (parsed.wallet || parsed.publicKey || parsed.address) {
+                        wallet = parsed.wallet || parsed.publicKey || parsed.address;
+                    }
                 } catch (e) {
-                    res.writeHead(200, {
-                        'Content-Type': 'application/json',
-                        'Access-Control-Allow-Origin': '*'
-                    });
-                    res.end(JSON.stringify({
-                        handle: cleanHandle,
-                        name: cleanHandle,
-                        avatar: avatarUrl,
-                        profileUrl: profileUrl
-                    }));
+                    // No wallet found, that's ok
                 }
+
+                res.writeHead(200, {
+                    'Content-Type': 'application/json',
+                    'Access-Control-Allow-Origin': '*'
+                });
+                res.end(JSON.stringify({
+                    handle: cleanHandle,
+                    name: cleanHandle,
+                    avatar: avatarUrl,
+                    profileUrl: profileUrl,
+                    wallet: wallet
+                }));
             });
         }).on('error', (err) => {
-            console.error('Twitter lookup error:', err);
-            // Still return a response with the avatar URL
+            // Bags lookup failed, still return profile info
+            console.log('Bags user lookup failed:', err.message);
             res.writeHead(200, {
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin': '*'
@@ -362,7 +362,8 @@ const server = http.createServer(async (req, res) => {
                 handle: cleanHandle,
                 name: cleanHandle,
                 avatar: avatarUrl,
-                profileUrl: profileUrl
+                profileUrl: profileUrl,
+                wallet: null
             }));
         });
         return;

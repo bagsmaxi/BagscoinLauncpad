@@ -980,30 +980,17 @@ body {
 }
 
 .fee-share-wallet {
-    margin-top: 12px;
+    margin-top: 8px;
 }
 
-.fee-share-wallet label {
+.fee-share-wallet-note {
     display: block;
     font-size: 12px;
-    color: var(--text-secondary);
-    margin-bottom: 6px;
-}
-
-.fee-share-wallet input {
-    width: 100%;
-    padding: 10px 12px;
-    background: var(--bg-secondary);
-    border: 1px solid var(--border);
-    border-radius: 8px;
-    color: var(--text);
-    font-size: 13px;
-    font-family: monospace;
-}
-
-.fee-share-wallet input:focus {
-    border-color: var(--green);
-    outline: none;
+    color: var(--green);
+    padding: 8px 12px;
+    background: rgba(74, 222, 128, 0.1);
+    border-radius: 6px;
+    border: 1px solid rgba(74, 222, 128, 0.2);
 }
 
 .fee-share-percent {

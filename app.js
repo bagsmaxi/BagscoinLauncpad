@@ -187,13 +187,16 @@ const App = {
                 throw new Error(data.error);
             }
 
-            // Store the fee share user (will need wallet address later)
+            // Store the fee share user with wallet from Bags.fm
             this.state.feeShareUser = {
                 handle: data.handle,
                 name: data.name,
                 avatar: data.avatar,
-                wallet: null // User will need to provide or we look up from Bags
+                wallet: data.wallet // Wallet from Bags.fm (may be null if not registered)
             };
+
+            // Store wallet in hidden input
+            document.getElementById('feeShareWalletInput').value = data.wallet || '';
 
             // Show preview
             document.getElementById('feeShareAvatar').src = data.avatar;
@@ -206,7 +209,11 @@ const App = {
             // Hide input
             handleInput.parentElement.style.display = 'none';
 
-            this.showToast('Profile found! Verify this is correct');
+            if (data.wallet) {
+                this.showToast('Profile found with Bags.fm wallet!');
+            } else {
+                this.showToast('Profile found! They can claim on bags.fm');
+            }
         } catch (error) {
             console.error('Lookup error:', error);
             this.showToast('Could not find profile');
@@ -308,7 +315,7 @@ const App = {
 
             // Build fee claimers list
             let feeClaimers = [];
-            const feeShareWallet = document.getElementById('feeShareWalletInput').value.trim();
+            const feeShareWallet = this.state.feeShareUser?.wallet || document.getElementById('feeShareWalletInput').value.trim();
             const feeShareBps = parseInt(document.getElementById('feeShareBps').value) || 50;
 
             if (this.state.feeShareUser && feeShareWallet) {
@@ -319,6 +326,11 @@ const App = {
                     { user: this.state.walletAddress, userBps: creatorBps },
                     { user: feeShareWallet, userBps: recipientBps }
                 ];
+                console.log('Fee share with:', this.state.feeShareUser.handle, feeShareWallet, `${feeShareBps}%`);
+            } else if (this.state.feeShareUser && !feeShareWallet) {
+                // User selected fee share but wallet not found - show warning
+                this.showToast('Fee share skipped - recipient has no bags.fm wallet yet');
+                feeClaimers = [{ user: this.state.walletAddress, userBps: 10000 }];
             } else {
                 // Creator gets all fees
                 feeClaimers = [{ user: this.state.walletAddress, userBps: 10000 }];

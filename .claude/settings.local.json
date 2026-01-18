@@ -26,7 +26,19 @@
       "Bash(ping:*)",
       "Bash(git add:*)",
       "Bash(git commit:*)",
-      "Bash(git push)"
+      "Bash(git push)",
+      "WebFetch(domain:coinmarketcap.com)",
+      "Bash(git -C \"C:\\\\Users\\\\Memes\\\\BagsIndex\" add LICENSE)",
+      "Bash(git -C \"C:\\\\Users\\\\Memes\\\\BagsIndex\" commit -m \"Add MIT license\n\nCo-Authored-By: Claude Opus 4.5 <noreply@anthropic.com>\")",
+      "Bash(git -C \"C:\\\\Users\\\\Memes\\\\BagsIndex\" push)",
+      "WebFetch(domain:pump.fun)",
+      "Bash(git -C /c/Users/Memes/BagsIndex log --oneline)",
+      "Bash(git checkout:*)",
+      "Bash(tasklist:*)",
+      "WebFetch(domain:app.bags.fm)",
+      "WebFetch(domain:ralphcoin.org)",
+      "Bash(git remote set-url:*)",
+      "Bash(git push:*)"
     ]
   }
 }
