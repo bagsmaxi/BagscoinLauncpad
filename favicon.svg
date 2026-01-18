@@ -1,16 +1,12 @@
 <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 32 32">
   <defs>
     <linearGradient id="bagGrad" x1="0%" y1="0%" x2="100%" y2="100%">
-      <stop offset="0%" style="stop-color:#FFD700"/>
-      <stop offset="100%" style="stop-color:#FFA500"/>
+      <stop offset="0%" style="stop-color:#4ade80"/>
+      <stop offset="100%" style="stop-color:#22c55e"/>
     </linearGradient>
   </defs>
-  <!-- Money bag body -->
-  <path d="M8 12 C8 12 6 14 6 18 C6 26 10 28 16 28 C22 28 26 26 26 18 C26 14 24 12 24 12 L20 12 C20 12 18 14 16 14 C14 14 12 12 12 12 Z" fill="url(#bagGrad)" stroke="#B8860B" stroke-width="1.5"/>
-  <!-- Bag tie/knot -->
-  <path d="M12 12 C12 10 13 8 16 8 C19 8 20 10 20 12" fill="none" stroke="#B8860B" stroke-width="2"/>
-  <!-- Bag top strings -->
-  <path d="M14 8 L12 4 M18 8 L20 4" stroke="#B8860B" stroke-width="1.5" stroke-linecap="round"/>
-  <!-- Dollar sign -->
-  <text x="16" y="22" font-family="Arial, sans-serif" font-size="10" font-weight="bold" fill="#006400" text-anchor="middle">$</text>
+  <!-- Circle background -->
+  <circle cx="16" cy="16" r="15" fill="#111"/>
+  <!-- B letter for Bags -->
+  <text x="16" y="22" font-family="Arial, sans-serif" font-size="18" font-weight="bold" fill="url(#bagGrad)" text-anchor="middle">B</text>
 </svg>
