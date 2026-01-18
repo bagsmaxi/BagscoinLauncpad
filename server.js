@@ -19,7 +19,8 @@ const PORT = process.env.PORT || 3001;
 // API Configuration from environment variables
 const BAGS_API_KEY = process.env.BAGS_API_KEY || 'bags_prod_bk_8fBgAJgIsm7T2sXFxi8aYWLIgKfwcWHfuAf0ld3s';
 const HELIUS_RPC_URL = process.env.HELIUS_RPC_URL || 'https://mainnet.helius-rpc.com/?api-key=0d709c4e-dfbf-4bcd-bffb-1080188c2a14';
-// Partner config key for platform revenue (from dev.bags.fm)
+// Partner config for platform revenue (from dev.bags.fm)
+const PARTNER_WALLET = '6EhzcMXvKvBkYph4ivkKiCgDK1AbcirU5b3ehpiiffvG';
 const PARTNER_CONFIG_KEY = 'BoWTinLevvUkb8kRrcmfVnmqq8uKKetTwsc2eEJcrxZp';
 // Fallback config key (dynamically created per launch)
 const DEFAULT_CONFIG_KEY = null;
@@ -408,15 +409,16 @@ const server = http.createServer(async (req, res) => {
                 // Default: creator gets all fees (100% = 10000 bps)
                 const claimers = feeClaimers || [{ user: new PublicKey(payer), userBps: 10000 }];
 
-                // Create fee share config without partner (partner requires wallet + config together)
-                // Token creator gets full fee share, platform revenue comes from partner referral link
+                // Create fee share config with partner for platform revenue
                 const result = await bagsSDK.config.createBagsFeeShareConfig({
                     feeClaimers: claimers.map(c => ({
                         user: new PublicKey(c.user),
                         userBps: c.userBps
                     })),
                     payer: new PublicKey(payer),
-                    baseMint: new PublicKey(tokenMint)
+                    baseMint: new PublicKey(tokenMint),
+                    partner: new PublicKey(PARTNER_WALLET),
+                    partnerConfig: new PublicKey(PARTNER_CONFIG_KEY)
                 });
 
                 // Return transactions to sign and the config key
